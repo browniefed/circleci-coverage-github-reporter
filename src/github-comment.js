@@ -36,36 +36,36 @@ exports.postComment = function postComment({
   root = process.cwd(),
   verbose = true,
 }) {
-  const bot = Bot.create();
-
-  const coverage = parseFile(root, resolve(root, coverageJsonFilename));
-
-  const branch = bot.getBaseBranch(defaultBaseBranch);
-  const { priorCoverage, priorBuild } = bot.getPriorBuild(
-    branch,
-    coverageJsonFilename
-  );
-
-  if (!priorCoverage) {
-    console.log(`No prior coverage found`);
-  }
-
-  const baseArtifactUrl = bot.artifactUrl(`/${coverageHtmlRoot}`);
-  const text = exports.formatComment({
-    formatted: format(coverage, priorCoverage, baseArtifactUrl),
-    baseArtifactUrl,
-    buildNum: process.env.CIRCLE_BUILD_NUM,
-    buildUrl: process.env.CIRCLE_BUILD_URL,
-    priorBuildNum: priorBuild,
-    priorBuildUrl: process.env.CIRCLE_BUILD_URL.replace(
-      /\/\d+$/,
-      `/${priorBuild}`
-    ),
-    branch,
-    verbose,
-  });
-
   try {
+    const bot = Bot.create();
+
+    const coverage = parseFile(root, resolve(root, coverageJsonFilename));
+
+    const branch = bot.getBaseBranch(defaultBaseBranch);
+    const { priorCoverage, priorBuild } = bot.getPriorBuild(
+      branch,
+      coverageJsonFilename
+    );
+
+    if (!priorCoverage) {
+      console.log(`No prior coverage found`);
+    }
+
+    const baseArtifactUrl = bot.artifactUrl(`/${coverageHtmlRoot}`);
+    const text = exports.formatComment({
+      formatted: format(coverage, priorCoverage, baseArtifactUrl),
+      baseArtifactUrl,
+      buildNum: process.env.CIRCLE_BUILD_NUM,
+      buildUrl: process.env.CIRCLE_BUILD_URL,
+      priorBuildNum: priorBuild,
+      priorBuildUrl: process.env.CIRCLE_BUILD_URL.replace(
+        /\/\d+$/,
+        `/${priorBuild}`
+      ),
+      branch,
+      verbose,
+    });
+
     console.log(text);
     console.log(bot.comment(text));
     const result = JSON.parse(bot.comment(text));
